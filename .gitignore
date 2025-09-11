@@ -1,0 +1,12 @@
+﻿__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+.ipynb_checkpoints/
+.vscode/
+
+desktop.ini
+Thumbs.db
+*.lnk
