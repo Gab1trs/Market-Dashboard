@@ -14,8 +14,7 @@ ticker_filename={
     "ZW=F":"wheat_data.csv",
     "^TNX":"bond_data.csv",
     "TIP":"tips_data.csv",  #inflaton linked US
-    "^VIX":"vix_data.csv",         
-    "^DE10Y":"bund_data.csv"
+    "^VIX":"vix_data.csv"       
 }
 
 # Check for missing values
