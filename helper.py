@@ -2,7 +2,7 @@ import yfinance as yf
 import pandas as pd
 
 def data_download(ticker, start_date, end_date=None):
-    data = yf.download(ticker, start=start_date, end=end_date)['Close']
+    data = yf.download(ticker, start=start_date, end=end_date, auto_adjust=False)['Adj Close']
     data.to_csv(f"{ticker}_data.csv")
     return (pd.read_csv(f"{ticker}_data.csv", index_col=0, parse_dates=True)[ticker].pct_change() + 1).cumprod() 
 
@@ -12,7 +12,10 @@ ticker_filename={
     "GC=F":"gold_data.csv",
     "WTI":"crude_oil_data.csv",
     "ZW=F":"wheat_data.csv",
-    "^TNX":"bond_data.csv"
+    "^TNX":"bond_data.csv",
+    "TIP":"tips_data.csv",  #inflaton linked US
+    "^VIX":"vix_data.csv",         
+    "^DE10Y":"bund_data.csv"
 }
 
 # Check for missing values
