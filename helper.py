@@ -1,17 +1,35 @@
 import yfinance as yf
 import pandas as pd
-import os
+import numpy as np
 
-def data_download(ticker, start_date, end_date=None):
-    data = yf.download(ticker, start=start_date, end=end_date, auto_adjust=False)['Adj Close']
-    data.to_csv(data)
-    return (pd.read_csv(data, index_col=0, parse_dates=True)[ticker].pct_change() + 1).cumprod() 
+def data_download(ticker, start_date, end_date=None, save_csv=True):
+    price = yf.download(ticker, start=start_date, end=end_date, auto_adjust=False)["Adj Close"]
+    df = price.to_frame("price").sort_index()
+    ret = df["price"].pct_change().fillna(0)
+    df["linear"]     = (1 + ret).cumprod() * 100
+    df["base100"]    = (df["price"] / df["price"].iloc[0]) * 100
+    df["log_price"]  = np.log(1 + ret).cumsum() * 100  
+    df.index.name = "Date"
+    
+    if save_csv:
+        df.to_csv(f"{ticker}_data.csv", index=True)
+    return df
+
+
+def select_column_by_mode(df: pd.DataFrame, mode: str) -> pd.Series: 
+    if mode =="Linear":
+        return df["linear"]
+    elif mode =="Logarithmic":
+        return df["log_price"]
+    elif mode =="Base 100":
+        return df["base100"]
+    
 
 ticker_filename={
     "SPY":"spy_data.csv",
     "DX-Y.NYB":"usd_data.csv",
     "GC=F":"gold_data.csv",
-    "WTI":"crude_oil_data.csv",
+    "CL=F":"crude_oil_data.csv",
     "ZW=F":"wheat_data.csv",
     "^TNX":"bond_data.csv",
     "TIP":"tips_data.csv",  #inflaton linked US
