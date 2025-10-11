@@ -1,10 +1,11 @@
 import yfinance as yf
 import pandas as pd
+import os
 
 def data_download(ticker, start_date, end_date=None):
     data = yf.download(ticker, start=start_date, end=end_date, auto_adjust=False)['Adj Close']
-    data.to_csv(f"{ticker}_data.csv")
-    return (pd.read_csv(f"{ticker}_data.csv", index_col=0, parse_dates=True)[ticker].pct_change() + 1).cumprod() 
+    data.to_csv(data)
+    return (pd.read_csv(data, index_col=0, parse_dates=True)[ticker].pct_change() + 1).cumprod() 
 
 ticker_filename={
     "SPY":"spy_data.csv",
