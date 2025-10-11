@@ -12,7 +12,7 @@ assets=data.columns
 with st.sidebar:
     selected_assets=st.multiselect("Select Assets", assets)
     min_date, max_date=st.date_input("Select Date Range", [data.index.min(), data.index.max()])
-    selected_mode=st.selectbox("Select Mode", ["Linear", "Logarithmic", "Base 100"])
+    selected_mode=st.selectbox("Select Mode", ["Asset price", "Linear returns", "Logarithmic returns", "Base 100 returns"])
 
 # Filter data by date and selected assets
 filtered_data = data.loc[min_date:max_date, selected_assets] if selected_assets else pd.DataFrame()

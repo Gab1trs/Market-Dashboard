@@ -3,16 +3,29 @@ import pandas as pd
 import numpy as np
 
 def data_download(ticker, start_date, end_date=None, save_csv=True):
-    price = yf.download(ticker, start=start_date, end=end_date, auto_adjust=False)["Adj Close"]
-    df = price.to_frame("price").sort_index()
-    ret = df["price"].pct_change().fillna(0)
-    df["linear"]     = (1 + ret).cumprod() * 100
-    df["base100"]    = (df["price"] / df["price"].iloc[0]) * 100
-    df["log_price"]  = np.log(1 + ret).cumsum() * 100  
+    price = yf.download(ticker, start=start_date, end=end_date, auto_adjust=False, progress=False)["Adj Close"]
+    df = pd.DataFrame(price)
+    df.columns = [ticker]
+
+    df = df.iloc[1:].copy()
+
+    ratio = df[ticker] / df[ticker].shift(1)      
+    ret = ratio - 1                            
+
+    log_inc = np.where(ratio > 0, np.log(ratio), 0.0)
+
+    df   = df.iloc[1:].copy()
+    ret  = ret.iloc[1:]
+    log_inc = pd.Series(log_inc, index=ratio.index).iloc[1:]
+
+    base = df[ticker].iloc[0]
+    df["linear"]    = ret.cumsum() * 100          
+    df["log_price"] = log_inc.cumsum() * 100      
+    df["base100"]   = (df[ticker] / base) * 100   
+
     df.index.name = "Date"
-    
     if save_csv:
-        df.to_csv(f"{ticker}_data.csv", index=True)
+        df.to_csv(f"{ticker}_data.csv")
     return df
 
 
@@ -23,6 +36,8 @@ def select_column_by_mode(df: pd.DataFrame, mode: str) -> pd.Series:
         return df["log_price"]
     elif mode =="Base 100":
         return df["base100"]
+    elif mode =="Asset price":
+        return df.iloc[:, 0]
     
 
 ticker_filename={
@@ -36,11 +51,11 @@ ticker_filename={
     "^VIX":"vix_data.csv"       
 }
 
-# Check for missing values
-def check_na(data):
-    null_sum=data.isna().sum()
-    null_percentage=null_sum/len(data)*100
-    print (f'Ratio of missing values: {null_percentage:.2f}%')
+# Check for missing values (do not work anymore as we have a dtaframe and not a series)
+# def check_na(data):
+    # null_sum=data.isna().sum()
+    # null_percentage=null_sum/len(data)*100
+    # print (f'Ratio of missing values: {null_percentage:.2f}%')
 
 def fill_missing_values(df):
     df=df.ffill().dropna()
