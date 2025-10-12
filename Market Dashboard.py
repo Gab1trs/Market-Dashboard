@@ -27,10 +27,10 @@ dfs = {k: fill_missing_values(v) for k, v in dfs.items()}
 
 
 # Concatenate all Series into one DataFrame
-all_linear= pd.concat({k: v["linear"] for k, v in dfs.items()}, axis=1)
-all_log= pd.concat({k: v["log_price"] for k, v in dfs.items()}, axis=1)
-all_base= pd.concat({k: v["base100"] for k, v in dfs.items()}, axis=1)
-all_prices= pd.concat({k: v[tickers[k]] for k, v in dfs.items()}, axis=1)
+all_linear= pd.concat({k: v["linear"] for k, v in dfs.items()}, axis=1).dropna()
+all_log= pd.concat({k: v["log_price"] for k, v in dfs.items()}, axis=1).dropna()
+all_base= pd.concat({k: v["base100"] for k, v in dfs.items()}, axis=1).dropna()
+all_prices= pd.concat({k: v[tickers[k]] for k, v in dfs.items()}, axis=1).dropna()
 
 # Save to CSV
 all_linear.to_csv("all_assets_linear.csv")

@@ -20,7 +20,23 @@ assets = data.columns
 with st.sidebar:
     selected_assets = st.multiselect("Select Assets", assets)
     selected_mode = st.selectbox("Select Mode", list(mode_to_file.keys()))
-    min_date, max_date = st.date_input("Select Date Range", [data.index.min(), data.index.max()])
+    selected_timeframe = st.selectbox("Select Timeframe", ["3m", "6m", "YTD", "1Y", "5Y", "Max", "Custom"])
+    if selected_timeframe != "Custom":
+        if selected_timeframe == "3m":
+            min_date = data.index.max() - pd.DateOffset(months=3)
+        elif selected_timeframe == "6m":
+            min_date = data.index.max() - pd.DateOffset(months=6)
+        elif selected_timeframe == "YTD":
+            min_date = pd.Timestamp(year=data.index.max().year, month=1, day=1)
+        elif selected_timeframe == "1Y":
+            min_date = data.index.max() - pd.DateOffset(years=1)
+        elif selected_timeframe == "5Y":
+            min_date = data.index.max() - pd.DateOffset(years=5)
+        elif selected_timeframe == "Max":
+            min_date = data.index.min()
+        max_date = data.index.max()
+    else:
+        min_date, max_date = st.date_input("Select Date Range", [data.index.min(), data.index.max()])
 
 data = pd.read_csv(mode_to_file[selected_mode], index_col=0, parse_dates=True)
 
@@ -35,6 +51,8 @@ if not filtered_data.empty:
     plt.ylabel(selected_mode)
     plt.title(f"{selected_mode} of Selected Assets")
     plt.show()
+    st.write("Dates avec NaN :")
+    st.write(filtered_data[filtered_data.isna().any(axis=1)].index)
     st.pyplot(fig1)
 
 else:
