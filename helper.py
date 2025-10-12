@@ -7,27 +7,25 @@ def data_download(ticker, start_date, end_date=None, save_csv=True):
     df = pd.DataFrame(price)
     df.columns = [ticker]
 
-    df = df.iloc[1:].copy()
+    r = df[ticker].pct_change()
+    ratio = r + 1
 
-    ratio = df[ticker] / df[ticker].shift(1)      
-    ret = ratio - 1                            
+    df["linear"] = (r+1).cumprod()
+    
+    log_inc = np.where(ratio > 0, np.log(ratio), np.nan)
+    log_cum = pd.Series(log_inc, index=df.index).cumsum()
+    mask_invalid = ~(ratio > 0)
+    log_price = log_cum.copy()
+    log_price[mask_invalid] = df["linear"][mask_invalid]
+    df["log_price"] = log_price
 
-    log_inc = np.where(ratio > 0, np.log(ratio), 0.0)
-
-    df   = df.iloc[1:].copy()
-    ret  = ret.iloc[1:]
-    log_inc = pd.Series(log_inc, index=ratio.index).iloc[1:]
-
-    base = df[ticker].iloc[0]
-    df["linear"]    = ret.cumsum() * 100          
-    df["log_price"] = log_inc.cumsum() * 100      
-    df["base100"]   = (df[ticker] / base) * 100   
+    df = df.dropna()     
+    df["base100"]   = (df[ticker] / df[ticker].iloc[0]) * 100   
 
     df.index.name = "Date"
     if save_csv:
         df.to_csv(f"{ticker}_data.csv")
     return df
-
 
 def select_column_by_mode(df: pd.DataFrame, mode: str) -> pd.Series: 
     if mode =="Linear":
