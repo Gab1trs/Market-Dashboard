@@ -29,9 +29,7 @@ def data_download(ticker, start_date, end_date=None, save_csv=True):
     log_price = log_cum.copy()
     log_price[mask_invalid] = df["linear"][mask_invalid]
     df["log_price"] = log_price
-
     df = df.dropna()     
-    df["base100"]   = (df[ticker] / df[ticker].iloc[0]) * 100   
 
     df.index.name = "Date"
     if save_csv:
@@ -43,11 +41,23 @@ def select_column_by_mode(df: pd.DataFrame, mode: str) -> pd.Series:
         return df["linear"]
     elif mode =="Logarithmic":
         return df["log_price"]
-    elif mode =="Base 100":
-        return df["base100"]
     elif mode =="Asset price":
         return df.iloc[:, 0]
     
+def calc_linear(df):
+    linear = df.pct_change().add(1).cumprod()
+    linear.iloc[0] = 1
+    return linear
+    
+def calc_log(df):
+    ratio = df.pct_change() + 1
+    log_cum = ratio.where(ratio > 0).apply(np.log).cumsum()
+    linear = calc_linear(df)
+    for col in log_cum.columns:
+        log_cum.iloc[0, log_cum.columns.get_loc(col)] = 0
+        mask = ratio[col] <= 0
+        log_cum.loc[mask, col] = linear.loc[mask, col]
+    return log_cum
 
 # Check for missing values (do not work anymore as we have a dtaframe and not a series)
 # def check_na(data):
