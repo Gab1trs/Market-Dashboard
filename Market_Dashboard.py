@@ -6,7 +6,7 @@
 import datetime as dt
 from helper import *
 
-startdate="2019-09-19"
+startdate="2000-01-01"
 enddate=dt.datetime.today().strftime("%Y-%m-%d")
 
 
