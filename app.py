@@ -9,7 +9,6 @@ from helper import *
 title = "Cross Asset Regime Monitor"
 st.set_page_config(page_title=title, layout="wide")
 st.title(title)
-st.write(f"**To ease the use and efficiency of the Monitor, all the returns are calculated from {startdate}.**")
 
 data = pd.read_csv("all_assets_prices.csv", index_col=0, parse_dates=True)
 assets = data.columns
