@@ -29,5 +29,5 @@ dfs = {k: fill_missing_values(v) for k, v in dfs.items()}
 
 all_prices= pd.concat({k: v[tickers[k]] for k, v in dfs.items()}, axis=1).dropna()
 
-all_prices.to_csv("all_assets_prices.csv")
+all_prices.to_csv("data/all_assets_prices.csv")
 

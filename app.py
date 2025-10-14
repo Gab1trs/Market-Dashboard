@@ -10,7 +10,7 @@ title = "Cross Asset Regime Monitor"
 st.set_page_config(page_title=title, layout="wide")
 st.title(title)
 
-data = pd.read_csv("all_assets_prices.csv", index_col=0, parse_dates=True)
+data = pd.read_csv("data/all_assets_prices.csv", index_col=0, parse_dates=True)
 assets = data.columns
 
 with st.sidebar:
@@ -44,13 +44,13 @@ with st.sidebar:
         min_date, max_date = st.date_input("Select Date Range", [data.index.min(), data.index.max()])
         filtered_data = data.loc[min_date:max_date, selected_assets] if selected_assets else pd.DataFrame()
     
-    selected_mode = st.selectbox("Select Mode", ["Asset price", "Linear", "Logarithmic"])
+    selected_mode = st.selectbox("Select Mode", ["Asset price", "Linear Returns", "Logarithmic Returns"])
 
     if selected_mode == "Asset price":
         mode_data = filtered_data
-    elif selected_mode == "Linear":
+    elif selected_mode == "Linear Returns":
         mode_data = calc_linear(filtered_data)
-    elif selected_mode == "Logarithmic":
+    elif selected_mode == "Logarithmic Returns":
         mode_data = calc_log(filtered_data)
 
 

@@ -16,33 +16,12 @@ ticker_filename={
 def data_download(ticker, start_date, end_date=None, save_csv=True):
     price = yf.download(ticker, start=start_date, end=end_date, auto_adjust=False, progress=False)["Adj Close"]
     df = pd.DataFrame(price)
-    df.columns = [ticker]
-
-    # r = df[ticker].pct_change()
-    # ratio = r + 1
-
-    # df["linear"] = (r+1).cumprod()
-    
-    # log_inc = np.where(ratio > 0, np.log(ratio), np.nan)
-    # log_cum = pd.Series(log_inc, index=df.index).cumsum()
-    # mask_invalid = ~(ratio > 0)
-    # log_price = log_cum.copy()
-    # log_price[mask_invalid] = df["linear"][mask_invalid]
-    # df["log_price"] = log_price
-    # df = df.dropna()     
+    df.columns = [ticker]   
 
     df.index.name = "Date"
     if save_csv:
-        df.to_csv(ticker_filename[ticker])
+        df.to_csv(f'data/{ticker_filename[ticker]}')
     return df
-
-def select_column_by_mode(df: pd.DataFrame, mode: str) -> pd.Series: 
-    if mode =="Linear":
-        return df["linear"]
-    elif mode =="Logarithmic":
-        return df["log_price"]
-    elif mode =="Asset price":
-        return df.iloc[:, 0]
     
 def calc_linear(df):
     linear = df.pct_change().add(1).cumprod()
@@ -59,7 +38,7 @@ def calc_log(df):
         log_cum.loc[mask, col] = linear.loc[mask, col]
     return log_cum
 
-# Check for missing values (do not work anymore as we have a dtaframe and not a series)
+# Check for missing values (do not work anymore as we have a dataframe and not a series)
 # def check_na(data):
     # null_sum=data.isna().sum()
     # null_percentage=null_sum/len(data)*100
