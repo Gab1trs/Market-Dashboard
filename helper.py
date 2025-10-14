@@ -18,18 +18,18 @@ def data_download(ticker, start_date, end_date=None, save_csv=True):
     df = pd.DataFrame(price)
     df.columns = [ticker]
 
-    r = df[ticker].pct_change()
-    ratio = r + 1
+    # r = df[ticker].pct_change()
+    # ratio = r + 1
 
-    df["linear"] = (r+1).cumprod()
+    # df["linear"] = (r+1).cumprod()
     
-    log_inc = np.where(ratio > 0, np.log(ratio), np.nan)
-    log_cum = pd.Series(log_inc, index=df.index).cumsum()
-    mask_invalid = ~(ratio > 0)
-    log_price = log_cum.copy()
-    log_price[mask_invalid] = df["linear"][mask_invalid]
-    df["log_price"] = log_price
-    df = df.dropna()     
+    # log_inc = np.where(ratio > 0, np.log(ratio), np.nan)
+    # log_cum = pd.Series(log_inc, index=df.index).cumsum()
+    # mask_invalid = ~(ratio > 0)
+    # log_price = log_cum.copy()
+    # log_price[mask_invalid] = df["linear"][mask_invalid]
+    # df["log_price"] = log_price
+    # df = df.dropna()     
 
     df.index.name = "Date"
     if save_csv:
