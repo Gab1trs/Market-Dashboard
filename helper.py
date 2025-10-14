@@ -9,7 +9,7 @@ ticker_filename={
     "CL=F":"crude_oil_data.csv",
     "ZW=F":"wheat_data.csv",
     "^TNX":"bond_data.csv",
-    "TIP":"tips_data.csv",  #inflaton linked US
+    "TIP":"tips_data.csv",  #inflation linked US (this is an ETF)
     "^VIX":"vix_data.csv"       
 }
 
@@ -43,36 +43,18 @@ def calc_vol(df, timeframe):
     vol_df = pd.DataFrame(index=df.index)
     for col in df.columns:
         if col == "10Y T-Bond":
-            # --- Advanced volatility calculation for Bond Yield (^TNX) ---
-            # This converts yield volatility to an estimated price volatility
-            # using a dynamic duration calculation.
-            
-            # 1. Define bond parameters
             n_years = 10
+            y_annual = df[col]/100
+            y_semi = y_annual/2
+            n_semi = n_years*2
             
-            # 2. Get yield and convert to semi-annual terms
-            y_annual = df[col] / 100
-            y_semi = y_annual / 2
-            n_semi = n_years * 2
-            
-            # 3. Calculate Macaulay Duration (approximation for a par bond)
-            # This gives the duration in semi-annual periods.
-            macaulay_duration_semi = (1 + y_semi) / y_semi * (1 - 1 / (1 + y_semi)**n_semi)
-            
-            # 4. Convert to Modified Duration in years
-            modified_duration_years = (macaulay_duration_semi / (1 + y_semi)) / 2
-
-            # 5. Calculate daily changes in annual yield
-            yield_change = df[col].diff() / 100
-            
-            # 6. Estimate daily percentage price change using Modified Duration
-            price_change = -modified_duration_years * yield_change
-            
-            # 7. Calculate the annualized rolling volatility of the estimated price changes
-            vol_df[col] = price_change.rolling(window=timeframe).std() * np.sqrt(252)
+            macaulay_duration_semi=(1+y_semi)/y_semi*(1-1/(1+y_semi)**n_semi)
+            modified_duration_years = (macaulay_duration_semi/(1+y_semi))/2
+            yield_change = df[col].diff()/100
+            price_change = -modified_duration_years*yield_change
+            vol_df[col] = price_change.rolling(window=timeframe).std()*np.sqrt(252)
 
         else:
-            # --- Standard percentage volatility for other assets ---
             vol_df[col] = df[col].pct_change().rolling(window=timeframe).std() * np.sqrt(252)
             
     return vol_df
@@ -81,23 +63,21 @@ def calc_bond_price_returns(df_yield, mode='linear'):
     yield_series = df_yield.iloc[:, 0]
     n_years = 10
     y_annual = yield_series / 100
-    y_semi = y_annual / 2
-    n_semi = n_years * 2
+    y_semi = y_annual/2
+    n_semi = n_years/2
     
-    macaulay_duration_semi = (1 + y_semi) / y_semi * (1 - 1 / (1 + y_semi)**n_semi)
+    macaulay_duration_semi = (1 + y_semi)/y_semi * (1 - 1 / (1 + y_semi)**n_semi)
     modified_duration_years = (macaulay_duration_semi / (1 + y_semi)) / 2
-    yield_change = yield_series.diff() / 100
+    yield_change = yield_series.diff()/100
     price_change = -modified_duration_years * yield_change
 
     if mode == 'linear':
-        returns = (1 + price_change).cumprod()
-        if not returns.empty:
-            returns.iloc[0] = 1
+        returns = (1+price_change).cumprod()
+        returns.iloc[0]=1 
         return returns.to_frame(df_yield.columns[0])
     elif mode == 'log':
         log_returns = price_change.cumsum()
-        if not log_returns.empty:
-            log_returns.iloc[0] = 0
+        log_returns.iloc[0]=0
         return log_returns.to_frame(df_yield.columns[0])
 
 def fill_missing_values(df):

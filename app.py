@@ -57,7 +57,7 @@ with st.sidebar:
     else:
         min_date, max_date = st.date_input("Select Date Range", [data.index.min(), data.index.max()])
         filtered_data = data.loc[min_date:max_date, selected_assets] if selected_assets else pd.DataFrame()
-        vol_data = calc_vol(data.loc[min_date-pd.DateOffset(months=6):, selected_assets], max(63, (max_date - min_date).days // 8))
+        vol_data = calc_vol(data.loc[min_date-pd.DateOffset(months=6):, selected_assets],min(63, (max_date - min_date).days // 8))
         vol_data = vol_data.loc[min_date:max_date]
     
     selected_mode = st.selectbox("Select Mode", ["Asset price", "Linear Returns", "Logarithmic Returns"])
@@ -69,24 +69,23 @@ with st.sidebar:
     other_cols = [col for col in selected_assets if col != '10Y T-Bond']
 
     if selected_mode == "Asset price":
-        if not filtered_data.empty:
-            mode_data = filtered_data[selected_assets]
+        mode_data = filtered_data[selected_assets]
 
     elif selected_mode == "Linear Returns":
         if other_cols:
             other_returns = calc_linear(filtered_data[other_cols])
-            mode_data = mode_data.join(other_returns, how='outer')
+            mode_data = mode_data.join(other_returns, how='inner')
         if bond_cols:
             bond_returns = calc_bond_price_returns(filtered_data[bond_cols], mode='linear')
-            mode_data = mode_data.join(bond_returns, how='outer')
+            mode_data = mode_data.join(bond_returns, how='inner')
 
     elif selected_mode == "Logarithmic Returns":
         if other_cols:
             other_returns = calc_log(filtered_data[other_cols])
-            mode_data = mode_data.join(other_returns, how='outer')
+            mode_data = mode_data.join(other_returns, how='inner')
         if bond_cols:
             bond_returns = calc_bond_price_returns(filtered_data[bond_cols], mode='log')
-            mode_data = mode_data.join(bond_returns, how='outer')
+            mode_data = mode_data.join(bond_returns, how='inner')
 
 
 if not filtered_data.empty:
@@ -114,7 +113,7 @@ if not filtered_data.empty:
     fig.update_layout(
         title=dict(
             text=f"<b>{selected_mode} of Selected Assets</b>",
-            x=0.32,
+            x=0.28,
             font=dict(size=22, family='Arial', color='white')
         ),
         legend=dict(
@@ -137,8 +136,10 @@ if not filtered_data.empty:
 
     if 'VIX' in selected_assets:
         vol_title='<b>Realized Asset Volatility vs. Implied Market Volatility (VIX)</b>'
+        x_pos = 0.21
     else:
         vol_title='<b>Annualized Volatility of Selected Assets</b>'
+        x_pos = 0.28
 
     fig1 = px.line(
         vol_data,
@@ -149,7 +150,7 @@ if not filtered_data.empty:
     fig1.update_layout(
         title=dict(
             text=vol_title,
-            x=0.29,
+            x=x_pos,
             font=dict(size=22, family='Arial', color='white')
         ),
         legend=dict(
