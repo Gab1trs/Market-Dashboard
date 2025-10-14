@@ -16,7 +16,7 @@ tickers = {
     "Gold": "GC=F",
     "Crude Oil": "CL=F",    
     "Wheat": "ZW=F",
-    "Bond": "^TNX",
+    "10Y T-Bond": "^TNX",
     "Inflation Bond": "TIP",
     "VIX": "^VIX",
 }
