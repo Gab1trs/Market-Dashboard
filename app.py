@@ -11,9 +11,13 @@ st.set_page_config(page_title=title, layout="wide")
 st.title(title)
 
 data = pd.read_csv("data/all_assets_prices.csv", index_col=0, parse_dates=True)
+cpi_data = pd.read_csv("data/cpi_data.csv", index_col=0, parse_dates=True)
 assets = data.columns
 
 data = proxy_global(data)
+
+inflation_regime = calculate_realized_inflation_regime(data, cpi_data)
+data = data.join(inflation_regime.rename('inflation_regime'))
 
 with st.sidebar:
     selected_assets = st.multiselect("Select Assets", assets,  default=["SPY"])
@@ -69,6 +73,7 @@ with st.sidebar:
         vol_data = vol_data.loc[min_date:max_date]
     
     selected_mode = st.selectbox("Select Mode", ["Asset price", "Linear Returns", "Logarithmic Returns"])
+    selected_regime = st.selectbox("Select Regime to Display", ['Growth/Recession', 'Inflation'])
 
     mode_data = pd.DataFrame(index=filtered_data.index)
 
@@ -104,49 +109,83 @@ if not filtered_data.empty:
         title=f"<b>{selected_mode} of Selected Assets</b>"
     )
 
-    regime_series = data['regime']
-    change_points = regime_series.ne(regime_series.shift())
-    period_starts = regime_series.index[change_points]
-    
-    shapes = []
-    for i, start_date in enumerate(period_starts):
-        try:
-            end_date = period_starts[i+1]
-        except IndexError:
-            end_date = regime_series.index[-1]
-        
-        regime = regime_series[start_date]
-        
-        color = ''
-        if regime == 'Recession':
-            color = 'red'
-        elif regime == 'Growth':
-            color = 'green'
-        
-        if color:
-            shapes.append(
-                dict(
-                    type="rect",
-                    xref="x",
-                    yref="paper",
-                    x0=start_date,
-                    y0=0,
-                    x1=end_date,
-                    y1=1,
-                    fillcolor=color,
-                    opacity=0.2,
-                    layer="below",
-                    line_width=0,
+    # --- DYNAMIC REGIME SHAPES AND LEGEND ---
+
+    # 1. Determine which regime column and color mapping to use
+    if selected_regime == 'Growth/Recession':
+        regime_col = 'regime'
+        color_map = {'Recession': 'red', 'Growth': 'green'}
+        legend_items = [
+            {'label': 'Growth', 'color': 'rgb(0,75,0)'},
+            {'label': 'Recession', 'color': 'rgb(75,0,0)'}
+        ]
+    else: # Inflation
+        regime_col = 'inflation_regime'
+        color_map = {'Inflation en Hausse': 'red', 'Inflation en Baisse': 'blue'}
+        legend_items = [
+            {'label': 'Inflation en Hausse', 'color': 'rgb(75,0,0)'},
+            {'label': 'Inflation en Baisse', 'color': 'rgb(0,0,75)'}
+        ]
+
+    # 2. Find the periods for the selected regime
+    if regime_col in data.columns:
+        regime_series = data[regime_col].dropna()
+        change_points = regime_series.ne(regime_series.shift())
+        period_starts = regime_series.index[change_points]
+
+        shapes = []
+        for i, start_date in enumerate(period_starts):
+            try:
+                end_date = period_starts[i+1]
+            except IndexError:
+                end_date = regime_series.index[-1]
+            
+            regime = regime_series[start_date]
+            
+            if regime in color_map:
+                shapes.append(
+                    dict(
+                        type="rect", xref="x", yref="paper",
+                        x0=start_date, y0=0, x1=end_date, y1=1,
+                        fillcolor=color_map[regime], opacity=0.2, layer="below", line_width=0,
+                    )
                 )
+
+        # 3. Filter shapes to the visible date range
+        visible_shapes = []
+        for shape in shapes:
+            if shape['x0'] <= max_date and shape['x1'] >= min_date:
+                clipped_shape = shape.copy()
+                clipped_shape['x0'] = max(shape['x0'], min_date)
+                clipped_shape['x1'] = min(shape['x1'], max_date)
+                visible_shapes.append(clipped_shape)
+    else:
+        visible_shapes = []
+
+    # 4. Create the dynamic legend annotations
+    annotations = [
+        dict(
+            text="<b>Periods</b>", align='left', showarrow=False,
+            xref='paper', yref='paper', x=1.02, y=0.5,
+            xanchor='left', yanchor='top', font=dict(size=18, family='Arial', color='white')
+        )
+    ]
+    y_pos = 0.45
+    for item in legend_items:
+        annotations.append(
+            dict(
+                text=f"<span style='color:{item['color']};'>█</span> {item['label']}",
+                align='left', showarrow=False, xref='paper', yref='paper',
+                x=1.02, y=y_pos, xanchor='left', yanchor='top',
+                font=dict(size=18, family='Arial', color='white')
             )
+        )
+        y_pos -= 0.05
 
-    visible_shapes = []
-    for shape in shapes:
-        if shape['x0'] <= max_date and shape['x1'] >= min_date:
-            visible_shapes.append(shape)
-
+    # 5. Update the figure
     fig.update_layout(
         shapes=visible_shapes,
+        annotations=annotations,
         title=dict(
             text=f"<b>{selected_mode} of Selected Assets</b>",
             x=0.28,
@@ -154,11 +193,7 @@ if not filtered_data.empty:
         ),
         legend=dict(
             title=dict(text='<b>Assets</b>', font=dict(size=18, family='Arial', color='white')),
-            orientation="v",
-            yanchor="top",
-            y=1,
-            xanchor="left",
-            x=1.02,
+            orientation="v", yanchor="top", y=1, xanchor="left", x=1.02,
             font=dict(size=18, family='Arial', color='white')
         ),
         xaxis=dict(title="Date", showgrid=True, gridcolor="#eee", tickangle=0, title_font=dict(size=16)),

@@ -82,7 +82,6 @@ def calc_bond_price_returns(df_yield, mode='linear'):
     
 def proxy_global(df, window=120):
     spy_proxy = df['SPY'].pct_change().rolling(window=window).mean()
-    #spread = df['SPY'].pct_change() - df['10Y T-Bond'].diff()
     conditions = [spy_proxy > 0]
     choices = ['Growth']
 
@@ -92,4 +91,12 @@ def proxy_global(df, window=120):
 def fill_missing_values(df):
     df=df.ffill().dropna()
     return df
+
+def calculate_realized_inflation_regime(price_data, cpi_data, window=6):
+    inflation_yoy = cpi_data['CPIAUCSL'].pct_change(periods=12) * 100
+    daily_inflation = inflation_yoy.reindex(price_data.index, method='ffill').dropna()
+    inflation_trend = daily_inflation.rolling(window=window * 21).mean()
+    conditions = [daily_inflation > inflation_trend]
+    choices = ['Inflation growth']
+    return pd.Series(np.select(conditions, choices, default='Inflation decline'), index=daily_inflation.index)
 
