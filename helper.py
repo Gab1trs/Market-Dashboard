@@ -64,7 +64,7 @@ def calc_bond_price_returns(df_yield, mode='linear'):
     n_years = 10
     y_annual = yield_series / 100
     y_semi = y_annual/2
-    n_semi = n_years/2
+    n_semi = n_years * 2
     
     macaulay_duration_semi = (1 + y_semi)/y_semi * (1 - 1 / (1 + y_semi)**n_semi)
     modified_duration_years = (macaulay_duration_semi / (1 + y_semi)) / 2
@@ -80,16 +80,13 @@ def calc_bond_price_returns(df_yield, mode='linear'):
         log_returns.iloc[0]=0
         return log_returns.to_frame(df_yield.columns[0])
     
-def proxy_global(df, window=63):
+def proxy_global(df, window=120):
     spy_proxy = df['SPY'].pct_change().rolling(window=window).mean()
-    spread = df['SPY'].pct_change() - df['10Y T-Bond'].diff()
-    conditions = [
-        (spy_proxy > 0) & (spread > 0), 
-        (spy_proxy < 0) & (spread < 0)   
-    ]
-    choices = ['Growth', 'Recession']
+    #spread = df['SPY'].pct_change() - df['10Y T-Bond'].diff()
+    conditions = [spy_proxy > 0]
+    choices = ['Growth']
 
-    df['regime'] = np.select(conditions, choices, default='Neutral')
+    df['regime'] = np.select(conditions, choices, default='Recession')
     return df
 
 def fill_missing_values(df):

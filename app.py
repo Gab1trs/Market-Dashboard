@@ -13,38 +13,46 @@ st.title(title)
 data = pd.read_csv("data/all_assets_prices.csv", index_col=0, parse_dates=True)
 assets = data.columns
 
+data = proxy_global(data)
+
 with st.sidebar:
     selected_assets = st.multiselect("Select Assets", assets,  default=["SPY"])
     selected_timeframe = st.selectbox("Select Timeframe", ["3m", "6m", "YTD", "1Y", "5Y","10Y", "Max", "Custom"], index=6)
 
     if selected_timeframe != "Custom":
         if selected_timeframe == "3m":
-            min_date = data.index.max() - pd.DateOffset(months=3)
+            max_date = data.index.max()
+            min_date = max_date - pd.DateOffset(months=3)
             filtered_data = data.loc[min_date:, selected_assets] if selected_assets else pd.DataFrame()
             vol_data = calc_vol(data.loc[min_date-pd.DateOffset(months=1):, selected_assets], 10)
             vol_data = vol_data.loc[min_date:]
         elif selected_timeframe == "6m":
-            min_date = data.index.max() - pd.DateOffset(months=6)
+            max_date = data.index.max()
+            min_date = max_date - pd.DateOffset(months=6)
             filtered_data = data.loc[min_date:, selected_assets] if selected_assets else pd.DataFrame()
             vol_data = calc_vol(data.loc[min_date-pd.DateOffset(months=2):, selected_assets], 21)
             vol_data = vol_data.loc[min_date:]
         elif selected_timeframe == "YTD":
-            min_date = pd.Timestamp(year=data.index.max().year, month=1, day=1)
+            max_date = data.index.max()
+            min_date = pd.Timestamp(year=max_date.year, month=1, day=1)
             filtered_data = data.loc[min_date:, selected_assets] if selected_assets else pd.DataFrame()
             vol_data = calc_vol(data.loc[min_date-pd.DateOffset(months=2):, selected_assets], 21)
             vol_data = vol_data.loc[min_date:]
         elif selected_timeframe == "1Y":
-            min_date = data.index.max() - pd.DateOffset(years=1)
+            max_date = data.index.max()
+            min_date = max_date - pd.DateOffset(years=1)
             filtered_data = data.loc[min_date:, selected_assets] if selected_assets else pd.DataFrame()
             vol_data = calc_vol(data.loc[min_date-pd.DateOffset(months=2):, selected_assets], 21)
             vol_data = vol_data.loc[min_date:]
         elif selected_timeframe == "5Y":
-            min_date = data.index.max() - pd.DateOffset(years=5)
+            max_date = data.index.max()
+            min_date = max_date - pd.DateOffset(years=5)
             filtered_data = data.loc[min_date:, selected_assets] if selected_assets else pd.DataFrame()
             vol_data = calc_vol(data.loc[min_date-pd.DateOffset(months=6):, selected_assets], 63)
             vol_data = vol_data.loc[min_date:]
         elif selected_timeframe == "10Y":
-            min_date = data.index.max() - pd.DateOffset(years=10)
+            max_date = data.index.max()
+            min_date = max_date - pd.DateOffset(years=10)
             filtered_data = data.loc[min_date:, selected_assets] if selected_assets else pd.DataFrame()
             vol_data = calc_vol(data.loc[min_date-pd.DateOffset(months=6):, selected_assets], 63)
             vol_data = vol_data.loc[min_date:]
@@ -64,7 +72,6 @@ with st.sidebar:
 
     mode_data = pd.DataFrame(index=filtered_data.index)
 
-    # Separate bond columns from other assets
     bond_cols = [col for col in selected_assets if col == '10Y T-Bond']
     other_cols = [col for col in selected_assets if col != '10Y T-Bond']
 
@@ -89,20 +96,6 @@ with st.sidebar:
 
 
 if not filtered_data.empty:
-    # If using matplotlib
-    # plt.style.use("seaborn-v0_8-darkgrid")
-    # fig = plt.figure(figsize=(12,7))
-    # plt.plot(filtered_data, linewidth=2)
-    # plt.xlim(filtered_data.index.min())
-    # plt.xlabel("Date", fontsize=14)
-    # plt.ylabel(selected_mode, fontsize=14)
-    # plt.title(f"{selected_mode} of Selected Assets", fontsize=16, fontweight="bold")
-    # plt.grid(True, linestyle='--', alpha=0.5)
-    # plt.legend(selected_assets, fontsize=12, loc='upper left')
-    # fig.autofmt_xdate()
-    # plt.tight_layout()
-
-    # If using Plotly
     fig = px.line(
         mode_data,
         x=mode_data.index,
@@ -110,7 +103,50 @@ if not filtered_data.empty:
         labels={"value": selected_mode, "variable": "Asset", "index": "Date"},
         title=f"<b>{selected_mode} of Selected Assets</b>"
     )
+
+    regime_series = data['regime']
+    change_points = regime_series.ne(regime_series.shift())
+    period_starts = regime_series.index[change_points]
+    
+    shapes = []
+    for i, start_date in enumerate(period_starts):
+        try:
+            end_date = period_starts[i+1]
+        except IndexError:
+            end_date = regime_series.index[-1]
+        
+        regime = regime_series[start_date]
+        
+        color = ''
+        if regime == 'Recession':
+            color = 'red'
+        elif regime == 'Growth':
+            color = 'green'
+        
+        if color:
+            shapes.append(
+                dict(
+                    type="rect",
+                    xref="x",
+                    yref="paper",
+                    x0=start_date,
+                    y0=0,
+                    x1=end_date,
+                    y1=1,
+                    fillcolor=color,
+                    opacity=0.2,
+                    layer="below",
+                    line_width=0,
+                )
+            )
+
+    visible_shapes = []
+    for shape in shapes:
+        if shape['x0'] <= max_date and shape['x1'] >= min_date:
+            visible_shapes.append(shape)
+
     fig.update_layout(
+        shapes=visible_shapes,
         title=dict(
             text=f"<b>{selected_mode} of Selected Assets</b>",
             x=0.28,

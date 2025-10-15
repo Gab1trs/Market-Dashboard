@@ -1,8 +1,3 @@
-# Dashboard with equity (SPY), forex (USD), commodities (Gold, crude oil, wheat), bonds (Inflation-linked bonds).
-# Data about growth, inflation, volatility, and yield.
-# Data goes back as far as possible, with widget slider to choose time frame.
-
-
 import datetime as dt
 from helper import *
 
