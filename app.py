@@ -108,10 +108,6 @@ if not filtered_data.empty:
         labels={"value": selected_mode, "variable": "Asset", "index": "Date"},
         title=f"<b>{selected_mode} of Selected Assets</b>"
     )
-
-    # --- DYNAMIC REGIME SHAPES AND LEGEND ---
-
-    # 1. Determine which regime column and color mapping to use
     if selected_regime == 'Growth/Recession':
         regime_col = 'regime'
         color_map = {'Recession': 'red', 'Growth': 'green'}
@@ -119,12 +115,12 @@ if not filtered_data.empty:
             {'label': 'Growth', 'color': 'rgb(0,75,0)'},
             {'label': 'Recession', 'color': 'rgb(75,0,0)'}
         ]
-    else: # Inflation
-        regime_col = 'inflation_regime'
-        color_map = {'Inflation en Hausse': 'red', 'Inflation en Baisse': 'blue'}
+    else: 
+        regime_col = 'Inflation_regime'
+        color_map = {'Inflation growth': 'red', 'Inflation decline': 'blue'}
         legend_items = [
-            {'label': 'Inflation en Hausse', 'color': 'rgb(75,0,0)'},
-            {'label': 'Inflation en Baisse', 'color': 'rgb(0,0,75)'}
+            {'label': 'Inflation growth', 'color': 'rgb(75,0,0)'},
+            {'label': 'Inflation decline', 'color': 'rgb(0,0,75)'}
         ]
 
     # 2. Find the periods for the selected regime
