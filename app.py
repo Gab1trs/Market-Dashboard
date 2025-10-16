@@ -116,14 +116,13 @@ if not filtered_data.empty:
             {'label': 'Recession', 'color': 'rgb(75,0,0)'}
         ]
     else: 
-        regime_col = 'Inflation_regime'
+        regime_col = 'inflation_regime'
         color_map = {'Inflation growth': 'red', 'Inflation decline': 'blue'}
         legend_items = [
             {'label': 'Inflation growth', 'color': 'rgb(75,0,0)'},
             {'label': 'Inflation decline', 'color': 'rgb(0,0,75)'}
         ]
 
-    # 2. Find the periods for the selected regime
     if regime_col in data.columns:
         regime_series = data[regime_col].dropna()
         change_points = regime_series.ne(regime_series.shift())
@@ -147,7 +146,6 @@ if not filtered_data.empty:
                     )
                 )
 
-        # 3. Filter shapes to the visible date range
         visible_shapes = []
         for shape in shapes:
             if shape['x0'] <= max_date and shape['x1'] >= min_date:
@@ -158,7 +156,6 @@ if not filtered_data.empty:
     else:
         visible_shapes = []
 
-    # 4. Create the dynamic legend annotations
     annotations = [
         dict(
             text="<b>Periods</b>", align='left', showarrow=False,
@@ -178,7 +175,6 @@ if not filtered_data.empty:
         )
         y_pos -= 0.05
 
-    # 5. Update the figure
     fig.update_layout(
         shapes=visible_shapes,
         annotations=annotations,
@@ -193,8 +189,7 @@ if not filtered_data.empty:
             font=dict(size=18, family='Arial', color='white')
         ),
         xaxis=dict(title="Date", showgrid=True, gridcolor="#eee", tickangle=0, title_font=dict(size=16)),
-        yaxis=dict(title=selected_mode, showgrid=True, gridcolor="#eee", title_font=dict(size=16)),
-        margin=dict(l=40, r=120, t=60, b=40),
+        margin=dict(l=40, r=180, t=60, b=40),
         width=1600,
         height=650
     )
