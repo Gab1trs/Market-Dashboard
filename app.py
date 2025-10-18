@@ -73,7 +73,7 @@ with st.sidebar:
         vol_data = vol_data.loc[min_date:max_date]
     
     selected_mode = st.selectbox("Select Mode", ["Asset price", "Linear Returns", "Logarithmic Returns"])
-    selected_regime = st.selectbox("Select Regime to Display", ['Growth/Recession', 'Inflation'])
+    selected_regime = st.selectbox("Select Regime to Display", ['Growth/Recession', 'Inflation', 'Both'])
 
     mode_data = pd.DataFrame(index=filtered_data.index)
 
@@ -115,12 +115,27 @@ if not filtered_data.empty:
             {'label': 'Growth', 'color': 'rgb(0,75,0)'},
             {'label': 'Recession', 'color': 'rgb(75,0,0)'}
         ]
-    else: 
+    elif selected_regime == 'Inflation':
         regime_col = 'inflation_regime'
         color_map = {'Inflation growth': 'red', 'Inflation decline': 'blue'}
         legend_items = [
             {'label': 'Inflation growth', 'color': 'rgb(75,0,0)'},
             {'label': 'Inflation decline', 'color': 'rgb(0,0,75)'}
+        ]
+    else:
+        regime_col = 'both_regimes'
+        data['both_regimes'] = data['regime'] + ' & ' + data['inflation_regime']
+        color_map = {
+            'Growth & Inflation growth': 'green',
+            'Growth & Inflation decline': 'blue',
+            'Recession & Inflation growth': 'red',
+            'Recession & Inflation decline': 'yellow'
+        }
+        legend_items = [
+            {'label': 'Growth & Inflation growth', 'color': 'rgb(0,75,0)'},
+            {'label': 'Growth & Inflation decline', 'color': 'rgb(0,0,75)'},
+            {'label': 'Recession & Inflation growth', 'color': 'rgb(75,0,0)'},
+            {'label': 'Recession & Inflation decline', 'color': 'rgb(150,150,0)'}
         ]
 
     if regime_col in data.columns:
@@ -155,7 +170,7 @@ if not filtered_data.empty:
                 visible_shapes.append(clipped_shape)
     else:
         visible_shapes = []
-
+    
     annotations = [
         dict(
             text="<b>Periods</b>", align='left', showarrow=False,
@@ -175,6 +190,11 @@ if not filtered_data.empty:
         )
         y_pos -= 0.05
 
+    if selected_regime == 'Inflation' or selected_regime == 'Growth/Recession':
+        r=180
+    else:
+        r=280
+
     fig.update_layout(
         shapes=visible_shapes,
         annotations=annotations,
@@ -189,7 +209,7 @@ if not filtered_data.empty:
             font=dict(size=18, family='Arial', color='white')
         ),
         xaxis=dict(title="Date", showgrid=True, gridcolor="#eee", tickangle=0, title_font=dict(size=16)),
-        margin=dict(l=40, r=180, t=60, b=40),
+        margin=dict(l=40, r=r, t=60, b=40),
         width=1600,
         height=650
     )
