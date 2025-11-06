@@ -24,7 +24,7 @@ def vega(S, K, T, r, sigma):
     return vega
 
 #function to compute the implied volatilty from the option price
-def implied_volatility_call(C, S, K, T, r, tol=0.0001, max_iterations=100):
+def implied_volatility_call(C, S, K, T, r, tol=0.0001, max_iterations=1000):
 
     #assigning initial volatility estimate for input in Newton-Raphson procedure
     #this website helped me a lot to do the following : https://www.codearmo.com/blog/implied-volatility-european-call-python
@@ -37,10 +37,19 @@ def implied_volatility_call(C, S, K, T, r, tol=0.0001, max_iterations=100):
 
         #break if difference is less than specified tolerance level
         if abs(diff) < tol:
+            print(f'found on {i}th iteration')
+            print(f'difference is equal to {diff}')
             break
 
         #use Newton-Rapshon to update the estimate
         sigma = sigma - diff / vega(S, K, T, r, sigma)
+    
+    print(C)
+    print(S)
+    print(K)
+    print(T)
+    print(r)
+    print(f'cest le sigma : {sigma}')
 
     return sigma
 

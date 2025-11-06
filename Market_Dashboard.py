@@ -104,10 +104,23 @@ all_futures_prices = (all_futures_prices / all_futures_prices.bfill().iloc[0])-1
 
 #we get the option chains and create each CSV file
 options = {name: get_options_chain(ticker) for name, ticker in option_tickers.items()}
+# options_temp={}
+# for name, ticker in option_tickers.items():
+#     options=get_options_chain(ticker)
+#     print(options)
+#     if (options['bid']==0).all() or (options['ask']==0).all():
+#         options_temp[name]= pd.read_csv(f"options/{name.replace(' ', '_')}_options.csv")
+#         print (f"ancien asset {name} utilisé")
+#     else:
+#         options_temp[name]=options
+#         print (f"nouvel asset {name} utilisé")
+        
 for name, df in options.items():
     df.to_csv(f"options/{name.replace(' ', '_')}_options.csv")
 
 all_option_chains=pd.concat({k: v['implied_volatility'] for k, v in options.items()}, axis=1).sort_index()
+# all_option_chains=pd.concat({k: v['implied_volatility'] for k, v in options_temp.items()}, axis=1).sort_index()
+
 
 all_prices.to_csv("data/all_assets_prices.csv")
 all_futures_prices.to_csv("futures/all_futures_prices.csv")
