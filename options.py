@@ -6,87 +6,104 @@ from scipy.stats import norm
 import pandas_datareader.data as web
 import math
 
-# #function to compute the price of the call
-# def black_scholes_call(S, K, T, r, sigma):
+#function to compute the price of the call
+def black_scholes_call(S, K, T, r, sigma):
 
-#     #standard black-scholes formula
-#     d1 = (np.log(S / K) + (r + sigma ** 2 / 2) * T) / (sigma * np.sqrt(T))
-#     d2 = d1 - sigma * np.sqrt(T)
+    #standard black-scholes formula
+    d1 = (np.log(S / K) + (r + sigma ** 2 / 2) * T) / (sigma * np.sqrt(T))
+    d2 = d1 - sigma * np.sqrt(T)
 
-#     call = S * norm.cdf(d1) -  norm.cdf(d2)* K * np.exp(-r * T)
-#     return call
+    call = S * norm.cdf(d1) -  norm.cdf(d2)* K * np.exp(-r * T)
+    return call
 
-# #function to compute the vega
-# def vega(S, K, T, r, sigma):
+#function to compute the vega
+def vega(S, K, T, r, sigma):
 
-#     d1 = (np.log(S / K) + (r + sigma ** 2 / 2) * T) / (sigma * np.sqrt(T))
+    d1 = (np.log(S / K) + (r + sigma ** 2 / 2) * T) / (sigma * np.sqrt(T))
     
-#     vega = S  * np.sqrt(T) * norm.pdf(d1)
-#     return vega
+    vega = S  * np.sqrt(T) * norm.pdf(d1)
+    return vega
 
-# #function to compute the implied volatilty from the option price
-# def implied_volatility_call(C, S, K, T, r, tol=0.0001, max_iterations=1000):
+#function to compute the implied volatilty from the option price
+def implied_volatility_call(C, S, K, T, r, tol=0.0001, max_iterations=1000):
 
-#     #assigning initial volatility estimate for input in Newton-Raphson procedure
-#     #this website helped me a lot to do the following : https://www.codearmo.com/blog/implied-volatility-european-call-python
-#     sigma = np.sqrt((2*np.pi)/T)*(C/S)
+    #assigning initial volatility estimate for input in Newton-Raphson procedure
+    #this website helped me a lot to do the following : https://www.codearmo.com/blog/implied-volatility-european-call-python
+    sigma = np.sqrt((2*np.pi)/T)*(C/S)
 
-#     for i in range(max_iterations):
+    for i in range(max_iterations):
 
-#         #calculate difference between blackscholes price and market price with iteratively updated volality estimate
-#         diff = black_scholes_call(S, K, T, r, sigma) - C
+        #calculate difference between blackscholes price and market price with iteratively updated volality estimate
+        diff = black_scholes_call(S, K, T, r, sigma) - C
 
-#         #break if difference is less than specified tolerance level
-#         if abs(diff) < tol:
-#             print(f'found on {i}th iteration')
-#             print(f'difference is equal to {diff}')
-#             break
-
-#         #use Newton-Rapshon to update the estimate
-#         sigma = sigma - diff / vega(S, K, T, r, sigma)
-    
-#     print(C)
-#     print(S)
-#     print(K)
-#     print(T)
-#     print(r)
-#     print(f'cest le sigma : {sigma}')
-
-#     return sigma
-
-def bsm_option_price(S, K, T, r, sigma):
-    d1 = (math.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * math.sqrt(T))
-    d2 = d1 - sigma * math.sqrt(T)
-    
-    return S * norm.cdf(d1) - K * math.exp(-r * T) * norm.cdf(d2)
-
-
-def calculate_implied_volatility(C, S, K, T, r):
-    epsilon = 1e-6
-    sigma = 0.5  # Initial guess for volatility
-    max_iterations = 100
-    iterations = 0
-
-    # Lists to store iteration results for plotting
-    iteration_values = []
-    iv_values = []
-
-    while True:
-        d1 = (math.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * math.sqrt(T))
-        vega = S * norm.pdf(d1) * math.sqrt(T)
-        option_price_estimate = bsm_option_price(S, K, T, r, sigma)
-
-        iteration_values.append(iterations)
-        iv_values.append(sigma)
-
-        error = C - option_price_estimate
-        if abs(error) < epsilon or iterations >= max_iterations:
+        #break if difference is less than specified tolerance level
+        if abs(diff) < tol:
             break
 
-        sigma += error / vega
-        iterations += 1
+        #use Newton-Rapshon to update the estimate
+        sigma = sigma - diff / vega(S, K, T, r, sigma)
 
-    return sigma #, iteration_values, iv_values
+    return sigma
+
+# def _black_scholes_vega(S, K, T, r, sigma):
+#     """
+#     Calcule le prix d'une option et son Vega selon le modèle Black-Scholes.
+#     Ceci est une fonction interne, préfixée par _.
+#     """
+#     if sigma <= 0 or T <= 0:
+#         return np.nan, np.nan
+
+#     d1 = (math.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * math.sqrt(T))
+#     d2 = d1 - sigma * math.sqrt(T)
+    
+#     price = (S * norm.cdf(d1) - K * math.exp(-r * T) * norm.cdf(d2))
+#     vega = S * norm.pdf(d1) * math.sqrt(T)
+    
+#     return price, vega
+
+# def implied_volatility(C, S, K, T, r, tol=1e-6, max_iter=100):
+#     """
+#     Calcule la volatilité implicite en utilisant la méthode de Newton-Raphson.
+
+#     :param S: Prix spot de l'actif sous-jacent
+#     :param K: Prix d'exercice (Strike)
+#     :param T: Temps jusqu'à l'expiration (en années)
+#     :param r: Taux d'intérêt sans risque
+#     :param market_price: Prix de l'option observé sur le marché
+#     :param tol: Tolérance pour la convergence
+#     :param max_iter: Nombre maximum d'itérations
+#     :return: Volatilité implicite (ou np.nan si non trouvée)
+#     """
+#     # Vérification de rationalité (valeur intrinsèque)
+#     intrinsic_value = max(0, S - K)
+#     if C < intrinsic_value * 0.99: # On laisse une petite marge
+#         return np.nan
+
+#     sigma = 0.5  # Estimation initiale de la volatilité
+
+#     for i in range(max_iter):
+#         price, vega = _black_scholes_vega(S, K, T, r, sigma)
+
+#         if np.isnan(price) or np.isnan(vega):
+#             return np.nan
+
+#         # Garde-fou : si vega est trop petit, la méthode diverge
+#         if vega < 1e-8:
+#             return np.nan
+
+#         error = price - C
+
+#         # Si l'erreur est suffisamment petite, on a trouvé la solution
+#         if abs(error) < tol:
+#             return sigma
+
+#         # Mise à jour de sigma selon Newton-Raphson
+#         sigma -= error / vega
+        
+#         # Garde-fou : on garde sigma dans des bornes raisonnables
+#         sigma = max(1e-4, min(sigma, 5.0))
+
+#     return np.nan # Retourne NaN si la convergence n'est pas atteinte
 
 
 #we dynamically get the most recent interest rate of the 10Y T-Bond
@@ -94,7 +111,7 @@ end = dt.datetime.today()
 start = (end - dt.timedelta(days=5)).strftime("%Y-%m-%d")
 end = end.strftime("%Y-%m-%d")
 interest_rate=web.DataReader('DGS10', 'fred', start, end).iloc[-1]
-interest_rate = interest_rate.iloc[0]
+interest_rate = (interest_rate.iloc[0])/100
 
 #function to get the options chain
 def get_options_chain(option_ticker: str) -> pd.DataFrame:
@@ -129,7 +146,7 @@ def get_options_chain(option_ticker: str) -> pd.DataFrame:
     chains['mid']=(chains['ask']+chains['bid'])/2
 
     #we can now compute the implied volatility for each maturity
-    chains['implied_volatility'] = chains.apply(lambda row : calculate_implied_volatility(C=row['mid'], S=spot, K=row['strike'], T=row['TimeToExpiration'], r=interest_rate), axis=1)
+    chains['implied_volatility'] = chains.apply(lambda row : implied_volatility_call(C=row['mid'], S=spot, K=row['strike'], T=row['TimeToExpiration'], r=interest_rate), axis=1)
 
     trimmed_chains=chains[['strike', 'bid', 'ask','mid', 'TimeToExpiration', 'implied_volatility']].iloc[1:]
 
