@@ -103,23 +103,21 @@ if 'SPY' in futures and not futures['SPY'].empty:
 all_futures_prices = (all_futures_prices / all_futures_prices.bfill().iloc[0])-1
 
 #we get the option chains and create each CSV file
-options = {name: get_options_chain(ticker) for name, ticker in option_tickers.items()}
-# options_temp={}
-# for name, ticker in option_tickers.items():
-#     options=get_options_chain(ticker)
-#     print(options)
-#     if (options['bid']==0).all() or (options['ask']==0).all():
-#         options_temp[name]= pd.read_csv(f"options/{name.replace(' ', '_')}_options.csv")
-#         print (f"ancien asset {name} utilisé")
-#     else:
-#         options_temp[name]=options
-#         print (f"nouvel asset {name} utilisé")
+#Sometimes Yahoo Finance doesn't return the price for the options. With the code below, we ensure that we do not replace the previous
+#data with obsolete one. If Yahoo Finance fails, we take the previous CSV file available for the asset
+options_temp={}
+for name, ticker in option_tickers.items():
+    options=get_options_chain(ticker)
+    if (options['bid']==0).all() or (options['ask']==0).all():
+        options_temp[name]= pd.read_csv(f"options/{name.replace(' ', '_')}_options.csv")
+    else:
+        options_temp[name]=options
         
-for name, df in options.items():
+for name, df in options_temp.items():
     df.to_csv(f"options/{name.replace(' ', '_')}_options.csv")
 
-all_option_chains=pd.concat({k: v['implied_volatility'] for k, v in options.items()}, axis=1).sort_index()
-# all_option_chains=pd.concat({k: v['implied_volatility'] for k, v in options_temp.items()}, axis=1).sort_index()
+# all_option_chains=pd.concat({k: v['implied_volatility'] for k, v in options.items()}, axis=1).sort_index()
+all_option_chains=pd.concat({k: v['implied_volatility'] for k, v in options_temp.items()}, axis=1).sort_index()
 
 
 all_prices.to_csv("data/all_assets_prices.csv")

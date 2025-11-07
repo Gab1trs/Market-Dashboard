@@ -45,66 +45,6 @@ def implied_volatility_call(C, S, K, T, r, tol=0.0001, max_iterations=1000):
 
     return sigma
 
-# def _black_scholes_vega(S, K, T, r, sigma):
-#     """
-#     Calcule le prix d'une option et son Vega selon le modèle Black-Scholes.
-#     Ceci est une fonction interne, préfixée par _.
-#     """
-#     if sigma <= 0 or T <= 0:
-#         return np.nan, np.nan
-
-#     d1 = (math.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * math.sqrt(T))
-#     d2 = d1 - sigma * math.sqrt(T)
-    
-#     price = (S * norm.cdf(d1) - K * math.exp(-r * T) * norm.cdf(d2))
-#     vega = S * norm.pdf(d1) * math.sqrt(T)
-    
-#     return price, vega
-
-# def implied_volatility(C, S, K, T, r, tol=1e-6, max_iter=100):
-#     """
-#     Calcule la volatilité implicite en utilisant la méthode de Newton-Raphson.
-
-#     :param S: Prix spot de l'actif sous-jacent
-#     :param K: Prix d'exercice (Strike)
-#     :param T: Temps jusqu'à l'expiration (en années)
-#     :param r: Taux d'intérêt sans risque
-#     :param market_price: Prix de l'option observé sur le marché
-#     :param tol: Tolérance pour la convergence
-#     :param max_iter: Nombre maximum d'itérations
-#     :return: Volatilité implicite (ou np.nan si non trouvée)
-#     """
-#     # Vérification de rationalité (valeur intrinsèque)
-#     intrinsic_value = max(0, S - K)
-#     if C < intrinsic_value * 0.99: # On laisse une petite marge
-#         return np.nan
-
-#     sigma = 0.5  # Estimation initiale de la volatilité
-
-#     for i in range(max_iter):
-#         price, vega = _black_scholes_vega(S, K, T, r, sigma)
-
-#         if np.isnan(price) or np.isnan(vega):
-#             return np.nan
-
-#         # Garde-fou : si vega est trop petit, la méthode diverge
-#         if vega < 1e-8:
-#             return np.nan
-
-#         error = price - C
-
-#         # Si l'erreur est suffisamment petite, on a trouvé la solution
-#         if abs(error) < tol:
-#             return sigma
-
-#         # Mise à jour de sigma selon Newton-Raphson
-#         sigma -= error / vega
-        
-#         # Garde-fou : on garde sigma dans des bornes raisonnables
-#         sigma = max(1e-4, min(sigma, 5.0))
-
-#     return np.nan # Retourne NaN si la convergence n'est pas atteinte
-
 
 #we dynamically get the most recent interest rate of the 10Y T-Bond
 end = dt.datetime.today()
