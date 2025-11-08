@@ -227,13 +227,13 @@ if not filtered_data.empty:
         shapes = []
         for i, start_date in enumerate(period_starts):
             try:
-                end_date = period_starts[i+1]
+                end_date = period_starts[i+1] #here we define the end our each regime's period
             except IndexError:
-                end_date = regime_series.index[-1]
+                end_date = regime_series.index[-1] #here we deal with the case of the last regime of our data
             
             regime = regime_series[start_date]
             
-            if regime in color_map:
+            if regime in color_map: #this is where we visually represent the regimes on the chart
                 shapes.append(
                     dict(
                         type="rect", xref="x", yref="paper",
@@ -242,7 +242,7 @@ if not filtered_data.empty:
                     )
                 )
 
-        visible_shapes = []
+        visible_shapes = [] #here we prevent the regimes from going outside of the chosen timeframe
         for shape in shapes:
             if shape['x0'] <= max_date and shape['x1'] >= min_date:
                 clipped_shape = shape.copy()
@@ -252,7 +252,7 @@ if not filtered_data.empty:
     else:
         visible_shapes = []
     
-    if selected_regime != 'None':
+    if selected_regime != 'None': #now we set the legend
         annotations = [
             dict(
                 text="<b>Periods</b>", align='left', showarrow=False,
@@ -264,7 +264,7 @@ if not filtered_data.empty:
         annotations = []
 
     y_pos = 0.45
-    for item in legend_items:
+    for item in legend_items: #same here
         annotations.append(
             dict(
                 text=f"<span style='color:{item['color']};'>█</span> {item['label']}",
@@ -275,7 +275,7 @@ if not filtered_data.empty:
         )
         y_pos -= 0.05
 
-    if selected_regime == 'Inflation' or selected_regime == 'Growth/Recession':
+    if selected_regime == 'Inflation' or selected_regime == 'Growth/Recession': #here we set the space that the graph occupies depending on the regime
         r=180
     elif selected_regime == 'None':
         r=80
