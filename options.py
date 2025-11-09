@@ -4,7 +4,6 @@ import yfinance as yf
 import numpy as np
 from scipy.stats import norm
 import pandas_datareader.data as web
-import math
 
 #function to compute the price of the call
 def black_scholes_call(S, K, T, r, sigma):

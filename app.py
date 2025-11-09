@@ -282,7 +282,7 @@ if not filtered_data.empty:
     else:
         r=280
 
-    fig.update_layout(
+    fig.update_layout( #and finally here we set up the visual aspect
         shapes=visible_shapes,
         annotations=annotations,
         title=dict(
@@ -303,7 +303,7 @@ if not filtered_data.empty:
     fig.update_traces(line=dict(width=3))
     st.plotly_chart(fig, use_container_width=False)
 
-    if 'VIX' in selected_assets:
+    if 'VIX' in selected_assets: #in case we chose the VIX asset, we modifiy the title of the next graph
         vol_title='<b>Realized Asset Volatility vs. Implied Market Volatility (VIX)</b>'
         x_pos = 0.26
     else:
@@ -340,15 +340,15 @@ if not filtered_data.empty:
     fig1.update_traces(line=dict(width=3))
     st.plotly_chart(fig1, use_container_width=False)
 
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2) #here we split the screen into two columns to display two graphs
 
-    with col1:
+    with col1: #here we are goign to plot the futures term structure
         selected_futures_cols = [col for col in selected_assets if col in futures.columns]
         filtered_futures = futures[selected_futures_cols]
 
         if not filtered_futures.empty:
-            # Interpolate missing values to create continuous lines
-            filtered_futures = filtered_futures.interpolate(method='linear', axis=0)
+            
+            filtered_futures = filtered_futures.interpolate(method='linear', axis=0) #here we interpolate the missing values so that we don't have cuts in the ploted lines
 
             fig_futures = px.line(
                 filtered_futures,
@@ -378,17 +378,17 @@ if not filtered_data.empty:
             )
             fig_futures.update_traces(line=dict(width=3))
             st.plotly_chart(fig_futures, use_container_width=True)
-        else:
-            st.markdown('<h3 style="font-size: 22px; color: white;">Term Structure of Futures</h3>', unsafe_allow_html=True)
+        else: #we don't have futures data for the TIP and the VIX so if only those assets are selected we show the text below
+            st.markdown('<h3 style="font-size: 22px; color: white;">Term Structure of Futures</h3>', unsafe_allow_html=True) #we use HTML to change the format with plotly
             st.write("No futures term structure data available for the selected asset(s).")
 
-    with col2:
-        selected_options_cols = [col for col in selected_assets if col in options.columns]
+    with col2: #here we are goign to plot the implied volatilty term structure
+        selected_options_cols = [col for col in selected_assets if col in options.columns] 
         filtered_options = options[selected_options_cols]
 
         if not filtered_options.empty:
-            # Interpolate missing values to create continuous lines
-            filtered_options = filtered_options.interpolate(method='linear', axis=0)
+            
+            filtered_options = filtered_options.interpolate(method='linear', axis=0) #here we interpolate the missing values so that we don't have cuts in the ploted lines
 
             fig_options = px.line(
                 filtered_options,
@@ -418,13 +418,13 @@ if not filtered_data.empty:
             )
             fig_options.update_traces(line=dict(width=3))
             st.plotly_chart(fig_options, use_container_width=True)
-        else:
-            st.markdown('<h3 style="font-size: 22px; color: white;">Term Structure of Implied Volatilty</h3>', unsafe_allow_html=True)
-            st.write("No volatitly term structure data available for the selected asset(s).")
+        else: #we don't have futures data for the T-Bond so if only this asset is selected we show the text below
+            st.markdown('<h3 style="font-size: 22px; color: white;">Term Structure of Implied Volatilty</h3>', unsafe_allow_html=True) #we use HTML to change the format with plotly
+            st.write("No volatitly term structure data available for the selected asset.")
 
     corr=calc_correlation(data)
 
-    fig2 = px.imshow(corr, text_auto=".2f", aspect="auto", color_continuous_scale='RdBu', color_continuous_midpoint=0)
+    fig2 = px.imshow(corr, text_auto=".2f", aspect="auto", color_continuous_scale='RdBu', color_continuous_midpoint=0) #here we plot the correlation matrix between all the assets
     fig2.update_layout(
         title=dict(
             text="<b>Correlation between the assets</b>",
@@ -434,9 +434,9 @@ if not filtered_data.empty:
     )
     st.plotly_chart(fig2, use_container_width=True)
         
-    col3, col4 = st.columns(2)
+    col3, col4 = st.columns(2) #again we split the screen into two columns
 
-    with col3:
+    with col3: #here we plot the US yield curve
         yield_curve=get_yield_curve(yields)
 
         fig_yields = px.line(
@@ -468,7 +468,7 @@ if not filtered_data.empty:
         fig_yields.update_traces(line=dict(width=3))
         st.plotly_chart(fig_yields, use_container_width=True)
 
-    with col4:
+    with col4: #here we will plot the chart of the evolution of the 10Y yields of the OECD countries
         countries_yields=get_countries_yields(yields)
 
         fig_countries_yields = px.bar(
@@ -499,9 +499,9 @@ if not filtered_data.empty:
         )
         st.plotly_chart(fig_countries_yields, use_container_width=True)
     
-    col5, col6 = st.columns(2)
+    col5, col6 = st.columns(2) #again we split the screen into two columns
 
-    with col5:
+    with col5: #here we will plot the timeframe adjusted OECD 10Y yields chart
 
         fig_yields_OECD = px.line(
                 filtered_data_yields,
@@ -530,7 +530,7 @@ if not filtered_data.empty:
         fig_yields_OECD.update_traces(line=dict(width=3))
         st.plotly_chart(fig_yields_OECD, use_container_width=True)
 
-    with col6:
+    with col6: #here we will plot the timeframe adjusted US yields chart
 
         fig_yields_us= px.line(
                 filtered_us_yields,
