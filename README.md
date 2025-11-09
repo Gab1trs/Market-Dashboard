@@ -33,6 +33,8 @@ The project consists of two main parts:
 
 ## Usage
 
+1. **Easiest way** You can follow this link which will directly redirect you on the usable project on streamlit : https://market-dashboard-skema.streamlit.app/
+
 1.  **Data Preparation:** First, run the data download and processing script. This only needs to be done periodically to update the data.
     ```bash
     python Market_Dashboard.py
