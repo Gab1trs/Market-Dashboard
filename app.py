@@ -125,12 +125,19 @@ with st.sidebar:
     #now this is the part concerning the yields. First, we add again a option that allows us to chose all the countries' yields at the same time
     st.markdown("---")
     yield_options = ["All Yields"] + countries_10Y_yields
-    selected__countries_yields = st.multiselect("Select Yields", yield_options, default=["US 10Y", "Germany 10Y"])
+    yield_maturities_options = ["All Yields"] + us_yields
+    selected__countries_yields = st.multiselect("Select 0ECD 10Y Yields", yield_options, default=["US 10Y", "Germany 10Y"])
+    selected__us_treasury_yields = st.multiselect("Select US Treasury Yields", yield_maturities_options, default=["US 3M","US 10Y"])
    
     if "All Yields" in selected__countries_yields:
         selected_yields = countries_10Y_yields
     else:
         selected_yields = selected__countries_yields
+
+    if "All Yields" in selected__us_treasury_yields:
+        selected_treasury_yields = us_yields
+    else:
+        selected_treasury_yields = selected__us_treasury_yields
 
     selected_yield_timeframe = st.selectbox("Select Yields Timeframe", ["3m", "6m", "YTD", "1Y", "5Y","10Y", "Max", "Custom"], index=6)
 
@@ -140,39 +147,39 @@ with st.sidebar:
             max_date_yields = yields.index.max()
             min_date_yields = max_date_yields - pd.DateOffset(months=3)
             filtered_data_yields = yields.loc[min_date_yields:, selected_yields] if selected_yields else pd.DataFrame()
-            filtered_us_yields=yields.loc[min_date_yields:, us_yields] if us_yields else pd.DataFrame()
+            filtered_us_yields=yields.loc[min_date_yields:, selected_treasury_yields] if selected_treasury_yields else pd.DataFrame()
         elif selected_yield_timeframe == "6m":
             max_date_yields = yields.index.max()
             min_date_yields = max_date_yields - pd.DateOffset(months=6)
             filtered_data_yields = yields.loc[min_date_yields:, selected_yields] if selected_yields else pd.DataFrame()
-            filtered_us_yields=yields.loc[min_date_yields:, us_yields] if us_yields else pd.DataFrame()
+            filtered_us_yields=yields.loc[min_date_yields:, selected_treasury_yields] if selected_treasury_yields else pd.DataFrame()
         elif selected_yield_timeframe == "YTD":
             max_date_yields = yields.index.max()
             min_date_yields = pd.Timestamp(year=max_date_yields.year, month=1, day=1)
             filtered_data_yields = yields.loc[min_date_yields:, selected_yields] if selected_yields else pd.DataFrame()
-            filtered_us_yields=yields.loc[min_date_yields:, us_yields] if us_yields else pd.DataFrame()
+            filtered_us_yields=yields.loc[min_date_yields:, selected_treasury_yields] if selected_treasury_yields else pd.DataFrame()
         elif selected_yield_timeframe == "1Y":
             max_date_yields = yields.index.max()
             min_date_yields = max_date_yields - pd.DateOffset(years=1)
             filtered_data_yields = yields.loc[min_date_yields:, selected_yields] if selected_yields else pd.DataFrame()
-            filtered_us_yields=yields.loc[min_date_yields:, us_yields] if us_yields else pd.DataFrame()
+            filtered_us_yields=yields.loc[min_date_yields:, selected_treasury_yields] if selected_treasury_yields else pd.DataFrame()
         elif selected_yield_timeframe == "5Y":
             max_date_yields = yields.index.max()
             min_date_yields = max_date_yields - pd.DateOffset(years=5)
             filtered_data_yields = yields.loc[min_date_yields:, selected_yields] if selected_yields else pd.DataFrame()
-            filtered_us_yields=yields.loc[min_date_yields:, us_yields] if us_yields else pd.DataFrame()
+            filtered_us_yields=yields.loc[min_date_yields:, selected_treasury_yields] if selected_treasury_yields else pd.DataFrame()
         elif selected_yield_timeframe == "10Y":
             max_date_yields = yields.index.max()
             min_date_yields = max_date_yields - pd.DateOffset(years=10)
             filtered_data_yields = yields.loc[min_date_yields:, selected_yields] if selected_yields else pd.DataFrame()
-            filtered_us_yields=yields.loc[min_date_yields:, us_yields] if us_yields else pd.DataFrame()
+            filtered_us_yields=yields.loc[min_date_yields:, selected_treasury_yields] if selected_treasury_yields else pd.DataFrame()
         elif selected_yield_timeframe == "Max":
             filtered_data_yields = yields[selected_yields]
-            filtered_us_yields=yields[us_yields]
+            filtered_us_yields=yields[selected_treasury_yields]
     else:
         min_date_yields, max_date_yields = st.date_input("Select Yields Date Range", [yields.index.min(), yields.index.max()])
         filtered_data_yields = yields.loc[min_date_yields:max_date_yields, selected_yields] if selected_yields else pd.DataFrame()
-        filtered_us_yields=yields.loc[min_date_yields:max_date_yields, us_yields] if us_yields else pd.DataFrame()
+        filtered_us_yields=yields.loc[min_date_yields:max_date_yields, selected_treasury_yields] if selected_treasury_yields else pd.DataFrame()
 
 #now we can begin to plot the results in streamlit
 if not filtered_data.empty:
