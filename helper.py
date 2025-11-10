@@ -125,7 +125,7 @@ def get_futures_chain(base_symbol: str, exchange_suffix: str, month_codes: list[
     futures_chain = []
     
     #on YF, all the futures tickers are different so we need to dynamically build the good format to retrieve the data
-    for year in range(current_year, current_year + 3):
+    for year in range(current_year, current_year + 2):
         year_code = str(year)[-2:]
         for month_code in month_codes:
             future_ticker = f"{base_symbol}{month_code}{year_code}{exchange_suffix}" 
