@@ -38,5 +38,6 @@ jobs:
             echo "No changes to commit."
           else
             git commit -m "Automated data update"
-            git push https://x-access-token:${{ secrets.MARKET_DASHBOARD_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }}
+            git remote set-url origin https://x-access-token:${{ secrets.MARKET_DASHBOARD_TOKEN }}@github.com/${{ github.repository }}
+            git push origin HEAD:${{ github.ref_name }}
           fi
