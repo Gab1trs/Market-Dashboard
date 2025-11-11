@@ -109,7 +109,7 @@ with st.sidebar:
         mode_data = filtered_data[selected_assets]
 
     elif selected_mode == "Linear Returns":
-        format_y = ".2%"
+        format_y = ".0%"
         title_y="Linear Returns"
         if other_cols:
             other_returns = calc_linear(filtered_data[other_cols])
@@ -119,7 +119,7 @@ with st.sidebar:
             mode_data = mode_data.join(bond_returns, how='inner')
 
     elif selected_mode == "Logarithmic Returns":
-        format_y = ".2%"
+        format_y = ".0%"
         title_y="Logarithmic Returns"
         if other_cols:
             other_returns = calc_log(filtered_data[other_cols])
