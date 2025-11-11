@@ -109,7 +109,7 @@ options_temp={}
 for name, ticker in option_tickers.items():
     options=get_options_chain(ticker)
     if (options['bid']==0).all() or (options['ask']==0).all():
-        options_temp[name]= pd.read_csv(f"options/{name.replace(' ', '_')}_options.csv")
+        options_temp[name]= pd.read_csv(f"options/{name.replace(' ', '_')}_options.csv", index_col=0, parse_dates=True)
     else:
         options_temp[name]=options
         
