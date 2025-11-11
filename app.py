@@ -346,7 +346,7 @@ if not filtered_data.empty:
             font=dict(size=18, family='Arial', color='white')
         ),
         xaxis=dict(title="Date", showgrid=True, gridcolor="#eee", tickangle=0, title_font=dict(size=16)),
-        yaxis=dict(title="Volatility", showgrid=True, gridcolor="#eee", title_font=dict(size=16), tickformat=".0%"),
+        yaxis=dict(title="Volatility", showgrid=True, title_font=dict(size=16), tickformat=".0%"),
         margin=dict(l=40, r=120, t=60, b=40),
         width=1600,
         height=650
