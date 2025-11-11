@@ -104,7 +104,7 @@ with st.sidebar:
 
     #depending on the mode selected, we use different functions to compute the returns. Then they are passed into mode_data dataframe
     if selected_mode == "Asset price":
-        format_y = ".2f"
+        format_y = ".0f"
         title_y="Asset price"
         mode_data = filtered_data[selected_assets]
 
