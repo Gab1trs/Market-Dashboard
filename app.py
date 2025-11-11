@@ -309,7 +309,7 @@ if not filtered_data.empty:
             font=dict(size=18, family='Arial', color='white')
         ),
         xaxis=dict(title="Date", showgrid=True, gridcolor="#eee", tickangle=0, title_font=dict(size=16)),
-        yaxis=dict(title=title_y, showgrid=True, gridcolor="#eee", title_font=dict(size=16), tickformat=format_y),
+        yaxis=dict(title=title_y, showgrid=False, title_font=dict(size=16), tickformat=format_y),
         margin=dict(l=40, r=r, t=60, b=40),
         width=1600,
         height=650
