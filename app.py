@@ -104,11 +104,13 @@ with st.sidebar:
 
     #depending on the mode selected, we use different functions to compute the returns. Then they are passed into mode_data dataframe
     if selected_mode == "Asset price":
-        format = ".2f"
+        format_y = ".2f"
+        title_y="Asset price"
         mode_data = filtered_data[selected_assets]
 
     elif selected_mode == "Linear Returns":
-        format = ".2%"
+        format_y = ".2%"
+        title_y="Linear Returns"
         if other_cols:
             other_returns = calc_linear(filtered_data[other_cols])
             mode_data = mode_data.join(other_returns, how='inner')
@@ -117,7 +119,8 @@ with st.sidebar:
             mode_data = mode_data.join(bond_returns, how='inner')
 
     elif selected_mode == "Logarithmic Returns":
-        format = ".2%"
+        format_y = ".2%"
+        title_y="Logarithmic Returns"
         if other_cols:
             other_returns = calc_log(filtered_data[other_cols])
             mode_data = mode_data.join(other_returns, how='inner')
@@ -305,7 +308,8 @@ if not filtered_data.empty:
             orientation="v", yanchor="top", y=1, xanchor="left", x=1.02,
             font=dict(size=18, family='Arial', color='white')
         ),
-        xaxis=dict(title="Date", showgrid=True, gridcolor="#eee", tickangle=0, title_font=dict(size=16), tickformat=format),
+        xaxis=dict(title="Date", showgrid=True, gridcolor="#eee", tickangle=0, title_font=dict(size=16)),
+        yaxis=dict(title=title_y, showgrid=True, gridcolor="#eee", title_font=dict(size=16), tickformat=format_y),
         margin=dict(l=40, r=r, t=60, b=40),
         width=1600,
         height=650
