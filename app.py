@@ -293,7 +293,7 @@ if not filtered_data.empty:
     elif selected_regime == 'None':
         r=80
     else:
-        r=280
+        r=200
 
     fig.update_layout( #and finally here we set up the visual aspect
         shapes=visible_shapes,
