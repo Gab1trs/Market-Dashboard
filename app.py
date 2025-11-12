@@ -293,7 +293,7 @@ if not filtered_data.empty:
     elif selected_regime == 'None':
         r=80
     else:
-        r=200
+        r=280
 
     fig.update_layout( #and finally here we set up the visual aspect
         shapes=visible_shapes,
@@ -315,7 +315,7 @@ if not filtered_data.empty:
         height=650
     )
     fig.update_traces(line=dict(width=3))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=False)
 
     if 'VIX' in selected_assets: #in case we chose the VIX asset, we modifiy the title of the next graph
         vol_title='<b>Realized Asset Volatility vs. Implied Market Volatility (VIX)</b>'
