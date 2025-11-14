@@ -270,7 +270,7 @@ if not filtered_data.empty:
             dict(
                 text="<b>Periods</b>", align='left', showarrow=False,
                 xref='paper', yref='paper', x=1.02, y=0.5,
-                xanchor='left', yanchor='top', font=dict(size=18, family='Arial', color='white')
+                xanchor='left', yanchor='top', font=dict(size=18, family='Arial')
             )
         ]
     else:
@@ -283,7 +283,7 @@ if not filtered_data.empty:
                 text=f"<span style='color:{item['color']};'>█</span> {item['label']}",
                 align='left', showarrow=False, xref='paper', yref='paper',
                 x=1.02, y=y_pos, xanchor='left', yanchor='top',
-                font=dict(size=18, family='Arial', color='white')
+                font=dict(size=18, family='Arial')
             )
         )
         y_pos -= 0.05
@@ -301,12 +301,12 @@ if not filtered_data.empty:
         title=dict(
             text=f"<b>{selected_mode} of Selected Assets</b>",
             x=0.32,
-            font=dict(size=22, family='Arial', color='white')
+            font=dict(size=22, family='Arial')
         ),
         legend=dict(
-            title=dict(text='<b>Assets</b>', font=dict(size=18, family='Arial', color='white')),
+            title=dict(text='<b>Assets</b>', font=dict(size=18, family='Arial')),
             orientation="v", yanchor="top", y=1, xanchor="left", x=1.02,
-            font=dict(size=18, family='Arial', color='white')
+            font=dict(size=18, family='Arial')
         ),
         xaxis=dict(title="Date", showgrid=True, gridcolor="#eee", tickangle=0, title_font=dict(size=16)),
         yaxis=dict(title=title_y, showgrid=True, title_font=dict(size=16), tickformat=format_y),
@@ -334,16 +334,16 @@ if not filtered_data.empty:
         title=dict(
             text=vol_title,
             x=x_pos,
-            font=dict(size=22, family='Arial', color='white')
+            font=dict(size=22, family='Arial')
         ),
         legend=dict(
-            title=dict(text='<b>Assets</b>', font=dict(size=18, family='Arial', color='white')),
+            title=dict(text='<b>Assets</b>', font=dict(size=18, family='Arial')),
             orientation="v",
             yanchor="top",
             y=1,
             xanchor="left",
             x=1.02,
-            font=dict(size=18, family='Arial', color='white')
+            font=dict(size=18, family='Arial')
         ),
         xaxis=dict(title="Date", showgrid=True, gridcolor="#eee", tickangle=0, title_font=dict(size=16)),
         yaxis=dict(title="Volatility", showgrid=True, title_font=dict(size=16), tickformat=".0%"),
@@ -374,16 +374,16 @@ if not filtered_data.empty:
                 title=dict(
                     text="<b>Term Structure of Futures</b>",
                     x=0.22,
-                    font=dict(size=22, family='Arial', color='white')
+                    font=dict(size=22, family='Arial')
                 ),
                 legend=dict(
-                    title=dict(text='<b>Assets</b>', font=dict(size=18, family='Arial', color='white')),
+                    title=dict(text='<b>Assets</b>', font=dict(size=18, family='Arial')),
                     orientation="v",
                     yanchor="top",
                     y=1,
                     xanchor="left",
                     x=1.02,
-                    font=dict(size=18, family='Arial', color='white')
+                    font=dict(size=18, family='Arial')
                 ),
                 xaxis=dict(title="Date", showgrid=True, gridcolor="#eee", tickangle=0, title_font=dict(size=16), dtick="M6"),
                 yaxis=dict(title="Future prices evolution (%)", showgrid=True, gridcolor="#eee", title_font=dict(size=16), tickformat=".2%"),
@@ -414,16 +414,16 @@ if not filtered_data.empty:
                 title=dict(
                     text="<b>Term Structure of Implied Volatility</b>",
                     x=0.17,
-                    font=dict(size=22, family='Arial', color='white')
+                    font=dict(size=22, family='Arial')
                 ),
                 legend=dict(
-                    title=dict(text='<b>Assets</b>', font=dict(size=18, family='Arial', color='white')),
+                    title=dict(text='<b>Assets</b>', font=dict(size=18, family='Arial')),
                     orientation="v",
                     yanchor="top",
                     y=1,
                     xanchor="left",
                     x=1.02,
-                    font=dict(size=18, family='Arial', color='white')
+                    font=dict(size=18, family='Arial')
                 ),
                 xaxis=dict(title="Date", showgrid=True, gridcolor="#eee", tickangle=0, title_font=dict(size=16), dtick="M6"),
                 yaxis=dict(title="Implied Volatility (%)", showgrid=True, gridcolor="#eee", title_font=dict(size=16), tickformat=".2%"),
@@ -443,7 +443,7 @@ if not filtered_data.empty:
         title=dict(
             text="<b>Correlation between the assets</b>",
             x=0.35,
-            font=dict(size=22, family='Arial', color='white')
+            font=dict(size=22, family='Arial')
         )
     )
     st.plotly_chart(fig2, use_container_width=True)
@@ -463,16 +463,16 @@ if not filtered_data.empty:
             title=dict(
                 text="<b>US Yield Curve</b>",
                 x=0.28,
-                font=dict(size=22, family='Arial', color='white')
+                font=dict(size=22, family='Arial')
             ),
             legend=dict(
-                title=dict(text='<b>Assets</b>', font=dict(size=18, family='Arial', color='white')),
+                title=dict(text='<b>Assets</b>', font=dict(size=18, family='Arial')),
                 orientation="v",
                 yanchor="top",
                 y=1,
                 xanchor="left",
                 x=1.02,
-                font=dict(size=18, family='Arial', color='white')
+                font=dict(size=18, family='Arial')
             ),
             xaxis=dict(title="Maturities", showgrid=True, gridcolor="#eee", tickangle=0, title_font=dict(size=16), dtick="M6"),
             yaxis=dict(title="Yield (%)", showgrid=True, gridcolor="#eee", title_font=dict(size=16), tickformat=".2f"),
@@ -495,16 +495,16 @@ if not filtered_data.empty:
             title=dict(
                 text="<b>OECD countries 10Y Yield Curve</b>",
                 x=0.2,
-                font=dict(size=22, family='Arial', color='white')
+                font=dict(size=22, family='Arial')
             ),
             legend=dict(
-                title=dict(text='<b>Assets</b>', font=dict(size=18, family='Arial', color='white')),
+                title=dict(text='<b>Assets</b>', font=dict(size=18, family='Arial')),
                 orientation="v",
                 yanchor="top",
                 y=1,
                 xanchor="left",
                 x=1.02,
-                font=dict(size=18, family='Arial', color='white')
+                font=dict(size=18, family='Arial')
             ),
             xaxis=dict(title="Countries", showgrid=True, gridcolor="#eee", tickangle=0, title_font=dict(size=16), dtick="M6"),
             yaxis=dict(title="10Y Yields (%)", showgrid=True, gridcolor="#eee", title_font=dict(size=16), tickformat=".2f"),
@@ -525,16 +525,16 @@ if not filtered_data.empty:
             title=dict(
                 text="<b>OEDC 10Y Yields Over Time</b>",
                 x=0.22,
-                font=dict(size=22, family='Arial', color='white')
+                font=dict(size=22, family='Arial')
             ),
             legend=dict(
-                title=dict(text='<b>Yields</b>', font=dict(size=18, family='Arial', color='white')),
+                title=dict(text='<b>Yields</b>', font=dict(size=18, family='Arial')),
                 orientation="v",
                 yanchor="top",
                 y=1,
                 xanchor="left",
                 x=1.02,
-                font=dict(size=18, family='Arial', color='white')
+                font=dict(size=18, family='Arial')
             ),
             xaxis=dict(title="Date", showgrid=True, gridcolor="#eee", tickangle=0, title_font=dict(size=16)),
             yaxis=dict(title="Yield (%)", showgrid=True, gridcolor="#eee", title_font=dict(size=16), tickformat=".2f"),
@@ -554,16 +554,16 @@ if not filtered_data.empty:
             title=dict(
                 text="<b>US Treasury Yields Over Time</b>",
                 x=0.22,
-                font=dict(size=22, family='Arial', color='white')
+                font=dict(size=22, family='Arial')
             ),
             legend=dict(
-                title=dict(text='<b>Yields</b>', font=dict(size=18, family='Arial', color='white')),
+                title=dict(text='<b>Yields</b>', font=dict(size=18, family='Arial')),
                 orientation="v",
                 yanchor="top",
                 y=1,
                 xanchor="left",
                 x=1.02,
-                font=dict(size=18, family='Arial', color='white')
+                font=dict(size=18, family='Arial')
             ),
             xaxis=dict(title="Date", showgrid=True, gridcolor="#eee", tickangle=0, title_font=dict(size=16)),
             yaxis=dict(title="Yield (%)", showgrid=True, gridcolor="#eee", title_font=dict(size=16), tickformat=".2f"),
