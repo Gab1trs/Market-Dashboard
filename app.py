@@ -441,7 +441,7 @@ if not filtered_data.empty:
     fig2 = px.imshow(corr, text_auto=".2f", aspect="auto", color_continuous_scale='RdBu', color_continuous_midpoint=0) #here we plot the correlation matrix between all the assets
     fig2.update_layout(
         title=dict(
-            text=f"<b>Correlation between the assets since {data.index.min()}</b>",
+            text=f"<b>Correlation between the assets since {data.index.min().strftime('%Y-%m-%d')}</b>",
             x=0.22,
             font=dict(size=22, family='Arial')
         )
