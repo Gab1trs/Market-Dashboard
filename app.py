@@ -300,7 +300,7 @@ if not filtered_data.empty:
         annotations=annotations,
         title=dict(
             text=f"<b>{selected_mode} of Selected Assets</b>",
-            x=0.32,
+            x=0.3,
             font=dict(size=22, family='Arial')
         ),
         legend=dict(
@@ -413,7 +413,7 @@ if not filtered_data.empty:
             fig_options.update_layout(
                 title=dict(
                     text="<b>Term Structure of Implied Volatility</b>",
-                    x=0.17,
+                    x=0.14,
                     font=dict(size=22, family='Arial')
                 ),
                 legend=dict(
@@ -524,7 +524,7 @@ if not filtered_data.empty:
         fig_yields_OECD.update_layout(
             title=dict(
                 text="<b>OEDC 10Y Yields Over Time</b>",
-                x=0.22,
+                x=0.19,
                 font=dict(size=22, family='Arial')
             ),
             legend=dict(
@@ -553,7 +553,7 @@ if not filtered_data.empty:
         fig_yields_us.update_layout(
             title=dict(
                 text="<b>US Treasury Yields Over Time</b>",
-                x=0.22,
+                x=0.19,
                 font=dict(size=22, family='Arial')
             ),
             legend=dict(
