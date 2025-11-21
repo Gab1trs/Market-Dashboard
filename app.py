@@ -316,14 +316,13 @@ if not filtered_data.empty:
     )
     fig.update_traces(line=dict(width=3))
     st.plotly_chart(fig, use_container_width=False)
-    st.write('On this graph you can se the evolution of prices/returns of the selected assets, as well as the different regimes of growth and inflation')
 
     if 'VIX' in selected_assets: #in case we chose the VIX asset, we modifiy the title of the next graph
-        vol_title='<b>Realized Asset Volatility vs. Implied Market Volatility (VIX)</b>'
-        x_pos = 0.26
+        vol_title='<b>Historical Realized Asset Volatility vs. Implied Market Volatility (VIX)</b>'
+        x_pos = 0.22
     else:
-        vol_title='<b>Annualized Volatility of Selected Assets</b>'
-        x_pos = 0.3
+        vol_title='<b>Historical Annualized Volatility of Selected Assets</b>'
+        x_pos = 0.25
 
     fig1 = px.line(
         vol_data,
